@@ -26,12 +26,12 @@ class EasyNTPClient
     int getTimeOffset();
     void setTimeOffset(int offset);
     unsigned long getUnixTime();
-    
+
   private:
     UDP *mUdp;
     const char* mServerPool = "pool.ntp.org";
     int mOffset = 0;
-    unsigned int mUpdateInterval = 60000;
+    uint32_t mUpdateInterval = 60000;
     unsigned long mLastUpdate = 0;
     long mServerTime = 0;
     unsigned long getServerTime();
