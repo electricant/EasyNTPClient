@@ -1,9 +1,6 @@
-# EasyNTPClient 
+# EasyNTPClient    
 
-[![Collaborizm](https://img.shields.io/badge/Collaborizm-Join%20now-blue.svg)](https://www.collaborizm.com/)
-[![Build Status](https://travis-ci.org/aharshac/EasyNTPClient.svg?branch=master)](https://travis-ci.org/aharshac/EasyNTPClient)    
-
-Arduino library to read time from Network Time Protocol (NTP) servers.
+Arduino library to read time from Network Time Protocol (NTP) servers. Updated version with small fixes and improvements.
 
 &nbsp;
 
