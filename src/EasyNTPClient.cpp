@@ -40,7 +40,7 @@ void EasyNTPClient::setTimeOffset (int offset) {
 
 
 unsigned long EasyNTPClient::getServerTime () {
-    static int udpInited = this->mUdp->begin(123); // open socket on arbitrary port
+    int udpInited = this->mUdp->begin(NTP_REQUEST_PORT);
     // Only the first four bytes of an NTP request have to be set. The rest
     // of the packet has to be 0, to avoid the server getting confused with the
     // timestamps.
@@ -50,24 +50,24 @@ unsigned long EasyNTPClient::getServerTime () {
 
     packetBuffer[0] = NTP_HEADER_LI|NTP_HEADER_VN|NTP_HEADER_MODE;
     // packetBuffer[1] (stratum) skipped because it is already 0
-    packetBuffer[2] = 6;    // polling interval in log2 seconds
-    packetBuffer[3] = 0xEC; // precision
+    packetBuffer[2] = NTP_HEADER_POLL;    // polling interval
+    packetBuffer[3] = NTP_HEADER_PRECISION; // clock precision
 
     // Fail if WiFiUdp.begin() could not init a socket
     if (! udpInited) {
       this->mUdp->stop();
-      return 0;
+      return E_UDP_INIT_FAIL;
     }
 
     // Clear received data from possible stray received packets
     this->mUdp->flush();
 
     // Send an NTP request
-    if (! (this->mUdp->beginPacket(this->mServerPool, 123) // 123 is the NTP port
+    if (! (this->mUdp->beginPacket(this->mServerPool, NTP_SERVER_PORT)
     && this->mUdp->write(packetBuffer, NTP_PACKET_SIZE) == NTP_PACKET_SIZE
     && this->mUdp->endPacket())) {
       this->mUdp->stop();
-    	return 0;       // sending request failed
+    	return E_UDP_REQUEST_FAIL;       // sending request failed
     }
 
     // Wait for response; check every pollIntv ms up to maxPoll times
@@ -82,7 +82,7 @@ unsigned long EasyNTPClient::getServerTime () {
 
     if (pktLen != NTP_PACKET_SIZE) {
       this->mUdp->stop();
-	return 0;       // no correct packet received
+	return E_INVALID_NTP_PACKET;       // no correct packet received
     }
 
     this->mUdp->read(packetBuffer, NTP_PACKET_SIZE);
